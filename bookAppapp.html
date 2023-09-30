@@ -1,0 +1,199 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/css/bootstrap.min.css" integrity="sha384-/Y6pD6FV/Vv2HJnA6t+vslU6fwYXjCFtcEpHbNJ0lyAFsXTsjBbfaDjzALeQsN6M" crossorigin="anonymous">
+  <title>Booking Appointment App</title>
+</head>
+<body>
+
+      <div class="container">
+       <div id="main" class="card card-body">
+
+        <form id="addForm" class="">
+            <div class="row">
+                <div class="col-md-3 col-sm-12 col-xs-12">
+                    <label for="email">Email </label>
+                    <input type="email" class="form-control" id="email">
+                </div>
+                <div class="col-md-3 col-sm-12 col-xs-12">
+                    <label for="Name">Name </label>
+                    <input type="text" class="form-control" id="name">
+                </div>
+                <div class="col-md-3 col-sm-12 col-xs-12">
+                    <label for="Phone">Phone </label>
+                    <input type="tel" class="form-control" id="phone">
+                </div>
+
+                <input type="hidden" id="userid">
+                <div class="col-md-3 col-sm-12 col-xs-12">
+                    <input type="submit" class="btn btn-dark" value="Submit" style="margin-top: 13%;">
+                </div>
+            </div>
+
+          
+          
+        </form>
+        <h2 class="title">Data</h2>
+        <ul id="items" class="list-group">
+          
+        </ul>
+       </div>
+      </div>
+
+</body>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.19.0/axios.min.js"></script>
+
+
+<script>
+
+var form = document.getElementById("addForm");
+var ul = document.getElementById("items");
+var deleteItems = document.getElementsByClassName("delete");
+
+form.addEventListener('submit', addItem);
+ul.addEventListener('click', removeItem);
+// deleteItems.addEventListener('click',removeItem);
+// deleteItems = document.addEventListener('click', removeItem);
+
+
+window.addEventListener("DOMContentLoaded",()=>{
+  axios.get("http://localhost:5000")
+  .then((response)=>{
+    for(var i = 0; i<response.data.length;i++){
+       // console.log(response.data[i]); 
+      showOutput(response.data[i]);
+    }
+  }).catch((error)=>console.log(error))
+})
+
+
+function showOutput(data){
+
+
+      var email = data.email;
+      var name = data.name;
+      var phone = data.phone;
+      var id = data.id;
+
+
+  var value = email + ',' + name + ',' + phone;
+  li = document.createElement("li");
+  li.className = 'list-group-item';
+  li.setAttribute('data-id',id);
+  li.appendChild(document.createTextNode(value));
+
+  var deleteBtn = document.createElement('button');
+  deleteBtn.className = 'btn btn-primary btn-sm float-right delete';
+  deleteBtn.appendChild(document.createTextNode('Delete'));
+  li.appendChild(deleteBtn);
+
+  // var editBtn = document.createElement('button');
+  // editBtn.className = 'btn btn-primary btn-sm float-right edit';
+  // editBtn.appendChild(document.createTextNode('Edit'));
+  // li.appendChild(editBtn);
+
+  ul.appendChild(li);
+
+
+
+}
+
+function addItem(e){
+    e.preventDefault();
+    var email = document.getElementById("email").value;
+    var name = document.getElementById("name").value;
+    var phone = document.getElementById("phone").value;
+    var value = email + ',' + name + ',' + phone;
+
+    var userid = document.getElementById("userid").value;
+
+
+    var entryObject = {};
+    entryObject.name = name;
+    entryObject.email = email;
+    entryObject.phone = phone;
+
+
+
+    storeInTable(entryObject, userid)
+
+    document.getElementById("email").value = '';
+    document.getElementById("name").value = '';
+    document.getElementById("phone").value = '';
+    document.getElementById("userid").value = '';
+
+
+}
+
+function storeInTable(data,userid){
+
+     console.log(data);
+
+  if(userid == null || userid == "" ){
+      axios.post("http://localhost:5000/add-user",{data
+      })
+      .then(res =>showOutput(res.data))
+      .catch(error=>console.error(error))
+  }
+
+ 
+}
+
+
+
+
+function removeItem(e){
+
+    var liRemove = e.target.parentElement;
+    var liRemoveid = liRemove.getAttribute('data-id');
+    
+
+    if(e.target.classList.contains('delete')){
+
+       if(confirm("Are you sure?")){
+            
+
+
+            axios.delete("http://localhost:5000/delete-user/"+liRemoveid)
+            .then(res=>{
+                console.log(res);
+                    ul.removeChild(liRemove);})
+            .catch(error=>console.error(error))
+        }
+    }
+
+
+    // if(e.target.classList.contains('edit')){
+
+    //     var liEdit = e.target.parentElement;
+    //     var liEditId = liEdit.getAttribute('data-id');
+
+    //     axios.get("https://crudcrud.com/api/de7b8350c705434b8528b58bb2ed71f8/app/"+liEditId)
+    //     .then(res=> {
+
+    //           var email = JSON.parse(res.data.data).email;
+    //           var name = JSON.parse(res.data.data).name;
+    //           var phone = JSON.parse(res.data.data).phone;
+    //           var uid = res.data._id;
+    //           document.getElementById("name").value = name;
+    //           document.getElementById("email").value = email;
+    //           document.getElementById("phone").value = phone;
+    //           document.getElementById("userid").value = uid;
+
+
+
+
+    //     })
+    // }
+
+
+}
+
+
+</script>
+</html>

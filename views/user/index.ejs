@@ -1,0 +1,52 @@
+<%- include('../includes/head.ejs') %>
+</head>
+<body>
+   
+
+    <div class="container">
+        <div class="jumbotron">
+          <h3>Booking Appointment App</h3>
+          <p>
+
+            <form action="/add-user" method="POST">
+                <div class="form-group">
+                  <label for="name">Name:</label>
+                  <input type="text" class="form-control" id="name" name="name">
+                </div>
+                <div class="form-group">
+                  <label for="phone">Phone:</label>
+                  <input type="tel" class="form-control" id="phone" name="phone">
+                </div>
+
+                <div class="form-group">
+                    <label for="email">Email:</label>
+                    <input type="email" class="form-control" id="email" name="email">
+                </div>
+
+
+               
+                <button type="submit" class="btn btn-default">Submit</button>
+              </form>
+
+
+          </p>
+        </div>
+
+    
+       
+      </div>
+      <div class="container">
+
+        <% if(users.length > 0){ %>
+        <ul class="list-group">
+            <% for (let user of users){ %>
+            
+            <li class="list-group-item"><%=user.name%> - <%=user.phone%> - <%=user.email%> <a class="btn btn-danger" href="/delete-user/<%= user.id %>">Delete</a>&nbsp;&nbsp;<a class="btn btn-warning" href="javascript:void(0);">Edit</a></li>
+            <% } %>
+          </ul>
+          <% } %>
+      </div>
+
+
+
+<%- include('../includes/footer.ejs') %>
